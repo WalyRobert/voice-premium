@@ -12,9 +12,22 @@ export function sniffAudio(bytes){
 }
 export function audioResponseToWav(data,mime){
  if(typeof mime!=='string')throw Error('Resposta sem formato de áudio.');
- if(/^audio\/wav(?:;|$)/i.test(mime)){if(sniffAudio(data)!=='audio/wav')throw Error('WAV inválido.');return data;}
+ if(/^audio\/wav(?:;|$)/i.test(mime)){return validateWav(data);}
  if(!/^audio\/(?:l16|pcm)(?:;|$)/i.test(mime))throw Error('Formato de áudio do provedor não suportado.');
  const rate=Number(/(?:^|;)\s*rate=(\d+)/i.exec(mime)?.[1]);
  if(!rate)throw Error('PCM sem taxa de amostragem.');
  return pcmToWav(data,rate);
+}
+
+export function validateWav(bytes){
+ if(sniffAudio(bytes)!=='audio/wav')throw Error('WAV inválido.');
+ const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),tag=(offset)=>String.fromCharCode(...bytes.subarray(offset,offset+4));
+ if(view.getUint32(4,true)+8!==bytes.length)throw Error('WAV truncado ou tamanho inconsistente.');
+ let offset=12,format=false,data=false,alignment=0,length=0;
+ while(offset+8<=bytes.length){const name=tag(offset),size=view.getUint32(offset+4,true),start=offset+8;if(start+size>bytes.length)throw Error('Bloco WAV incompleto.');
+  if(name==='fmt '){if(format||size<16)throw Error('Formato WAV inválido.');const channels=view.getUint16(start+2,true),rate=view.getUint32(start+4,true);alignment=channels*2;if(view.getUint16(start,true)!==1||![1,2].includes(channels)||view.getUint16(start+14,true)!==16||rate<8000||rate>192000||view.getUint16(start+12,true)!==alignment||view.getUint32(start+8,true)!==rate*alignment)throw Error('WAV precisa ser PCM16 com taxa e canais válidos.');format=true;}
+  if(name==='data'){if(data||!size)throw Error('WAV sem amostras válidas.');data=true;length=size;}
+  offset=start+size+(size%2);
+ }
+ if(offset!==bytes.length||!format||!data||length%alignment)throw Error('Estrutura WAV inválida.');return bytes;
 }
