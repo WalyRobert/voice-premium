@@ -25,3 +25,8 @@ Ao gerar roteiro, descrição e referência são enviados ao Gemini pelo servido
 Formato de áudio e geração: [documentação oficial Gemini](https://ai.google.dev/gemini-api/docs/speech-generation). Esta edição espera o contrato generateContent da família configurada; modelos com contrato diferente exigem adaptação.
 
 A interface foi adaptada para execução fora do Studio; a versão no Studio não é sobrescrita. Licença de redistribuição do código ainda não definida pelo autor; dependências mantêm suas próprias licenças.
+
+
+## Início e diagnóstico simplificados
+
+Após `npm ci`, execute `npm run diagnostico` para verificar Node, dependências, build e presença de configuração sem revelar chaves ou consumir cota. Execute `npm run iniciar` para compilar a versão atual e abrir o servidor local em um único terminal. A faixa de estado da interface distingue configuração ausente e integração ainda não comprovada. Encontrar uma chave não confirma que ela é válida nem que existe cota gratuita. Nenhum teste de geração é iniciado automaticamente.
