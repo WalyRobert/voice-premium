@@ -1,0 +1,2 @@
+import {it,expect} from 'vitest';import {pcmToWav,audioResponseToWav} from '../utils/audio.mjs';
+it('rejeita WAV truncado e PCM com cabeçalho de canais inconsistente',()=>{const good=pcmToWav(new Uint8Array([0,0,1,0]),24000);expect(audioResponseToWav(good,'audio/wav')).toEqual(good);expect(()=>audioResponseToWav(good.slice(0,-1),'audio/wav')).toThrow();const bad=good.slice();new DataView(bad.buffer).setUint16(22,0,true);expect(()=>audioResponseToWav(bad,'audio/wav')).toThrow();});
