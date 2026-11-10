@@ -15,7 +15,9 @@
     "test": "vitest run",
     "server": "node --env-file-if-exists=.env server/index.mjs",
     "start": "node --env-file-if-exists=.env server/index.mjs",
-    "test:server": "node --test server/*.test.mjs"
+    "test:server": "node --test server/*.test.mjs",
+    "diagnostico": "node scripts/doctor.mjs",
+    "iniciar": "node scripts/start.mjs"
   },
   "dependencies": {
     "react": "18.3.1",
