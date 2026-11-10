@@ -1,0 +1,2 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {providerFailure} from './provider.mjs';
+test('distingue credencial, modelo, cota e indisponibilidade sem vazar resposta do provedor',()=>{assert.equal(providerFailure(403).body.code,'PROVIDER_AUTH');assert.equal(providerFailure(404).body.code,'MODEL_UNAVAILABLE');assert.equal(providerFailure(429).status,429);assert.equal(providerFailure(500).status,502);});
