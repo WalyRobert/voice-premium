@@ -1,3 +1,4 @@
+import {providerFailure} from './provider.mjs';
 import {createServer} from 'node:http';import {readFile,stat} from 'node:fs/promises';import {resolve,sep,extname} from 'node:path';import {fileURLToPath} from 'node:url';
 import {audioResponseToWav,sniffAudio} from '../utils/audio.mjs';
 const dist=fileURLToPath(new URL('../dist/',import.meta.url));
@@ -31,7 +32,7 @@ export function createApp({key=process.env.GEMINI_API_KEY,model=process.env.GEMI
     const parts=speech?[{text:input.text}]:[{text:'Crie um diálogo de até 50 palavras e recomende uma voz dentre Zephyr, Puck, Charon, Kore, Fenrir. Não prometa clonagem nem identidade vocal. Descrição: '+input.description},...(input.reference?[{inlineData:input.reference}]:[])];
     const generationConfig=speech?{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:input.voice}}}}:{responseMimeType:'application/json',responseSchema:{type:'OBJECT',properties:{script:{type:'STRING'},recommendedVoice:{type:'STRING',enum:voices},reasoning:{type:'STRING'},suggestedStyle:{type:'OBJECT',properties:{speed:{type:'NUMBER'}},required:['speed']}},required:['script','recommendedVoice','reasoning','suggestedStyle']},temperature:.5};
     let response;try{response=await request(`https://generativelanguage.googleapis.com/v1beta/models/${speech?ttsModel:model}:generateContent`,{method:'POST',signal:AbortSignal.timeout(45000),headers:{'content-type':'application/json','x-goog-api-key':key},body:JSON.stringify({contents:[{role:'user',parts}],generationConfig})});}catch{return send(504,{error:'O provedor não respondeu no prazo.'});}
-    if(!response.ok)return send(502,{error:`Falha no provedor (HTTP ${response.status}). Confira modelo, chave e cota.`});
+    if(!response.ok){const failure=providerFailure(response.status);return send(failure.status,failure.body);}
     try{
      const data=await response.json(),parts=data.candidates?.[0]?.content?.parts;
      if(!Array.isArray(parts))throw Error();
