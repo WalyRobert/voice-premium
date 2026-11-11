@@ -1,5 +1,7 @@
 # Voice Premium
 
+![Voice Premium — síntese de voz com inteligência artificial](voice-premium-banner.jpeg)
+
 ## Escolha de provedor e chave por aba
 
 Roteiro de texto: Gemini, DeepSeek ou OpenAI. Síntese de voz: Gemini ou OpenAI, com catálogos próprios de vozes predefinidas. Referência de áudio para orientar roteiro está disponível somente no Gemini; outros provedores recebem apenas a descrição textual. Não há clonagem vocal.
@@ -51,3 +53,4 @@ A interface foi adaptada para execução fora do Studio; a versão no Studio nã
 Após `npm ci`, execute `npm run diagnostico` para verificar Node, dependências, build e presença de configuração sem revelar chaves ou consumir cota. Execute `npm run iniciar` para compilar a versão atual e abrir o servidor local em um único terminal. A faixa de estado da interface distingue configuração ausente e integração ainda não comprovada. Encontrar uma chave não confirma que ela é válida nem que existe cota gratuita. Nenhum teste de geração é iniciado automaticamente.
 
 A síntese OpenAI solicita PCM16 mono a 24 kHz e o servidor monta WAV com cabeçalho real. A transcrição OpenAI envia multipart com MIME/extensão coerentes; o Gemini recebe áudio inline. Formatos inválidos e respostas incompletas são rejeitados, sem criar áudio fictício.
+
